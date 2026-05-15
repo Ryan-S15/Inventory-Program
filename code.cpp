@@ -1,3 +1,9 @@
+//Instructions: Program starts by showing you the title screen, 
+//when your ready to start press 1 and from there you can view the total inventory or add/remove new parts. 
+//Using the numbers on the keyboard to anwser the questions it prompts you to anwser,
+//you can keep track of the inventory in a neat orderly manner.
+
+
 #include <iostream>
 #include <vector>
 #include <string>
