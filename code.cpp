@@ -3,7 +3,6 @@
 //Using the numbers on the keyboard to anwser the questions it prompts you to anwser,
 //you can keep track of the inventory in a neat orderly manner.
 
-
 #include <iostream>
 #include <vector>
 #include <string>
@@ -34,6 +33,8 @@ void buildAllIds (vector<int>& Rid, vector<string>& resistors,
 void programCheck (int& programCompletion); //asks the user if they want to keep using the program or exit
 void clearInputBuffer (); //clears the input buffer for clean input
 int searchList (vector<string>& list, string value); //textbook linear search, returns index or -1
+int searchById (vector<int>& ids, int target); //linear search of an ID vector, returns index or -1
+int stringToInt (string s); //returns the int value of s if it is all digits, otherwise -1
 int getMenuChoice (int low, int high); //prompts the user for a number in [low, high] with full input validation
 int getCategoryChoice (); //prompts the user to pick one of the 8 categories with validation
 
@@ -251,7 +252,15 @@ void modifyCategory (string title, vector<int>& ids, vector<string>& names, vect
     clearInputBuffer();
     getline(cin, partName);
 
-    int idx = searchList(names, partName); //textbook linear search to locate the part
+    //first try to interpret the input as an ID; if it isn't an ID, fall back to a name search
+    int idx = -1;
+    int maybeId = stringToInt(partName);
+    if (maybeId != -1) {
+        idx = searchById(ids, maybeId);
+    }
+    if (idx == -1) {
+        idx = searchList(names, partName); //textbook linear search by name
+    }
     if (idx == -1) {
         cout << "Part \"" << partName << "\" not found in " << title << "." << endl;
         return;
@@ -341,6 +350,41 @@ int searchList (vector<string>& list, string value) { //textbook linear search, 
     return position;
 }
 
+int searchById (vector<int>& ids, int target) { //linear search of an ID vector, returns index or -1
+    int index = 0;
+    int position = -1;
+    bool found = false;
+    while (index < ids.size() and !found) {
+        if (ids[index] == target) {
+            found = true;
+            position = index;
+        }
+        index = index + 1;
+    }
+    return position;
+}
+
+int stringToInt (string s) { //returns the int value of s if it is all digits, otherwise -1
+    if (s.size() == 0) {
+        return -1;
+    }
+    int result = 0;
+    int i = 0;
+    bool valid = true;
+    while (i < s.size() and valid) {
+        if (s[i] >= '0' and s[i] <= '9') {
+            result = result * 10 + (s[i] - '0');
+        } else {
+            valid = false;
+        }
+        i = i + 1;
+    }
+    if (!valid) {
+        return -1;
+    }
+    return result;
+}
+
 void programCheck (int& programCompletion) { //asks the user if they want to keep using the program or exit
     cout << "\n\nWould you like to do something else?\n\n1 - Yes\n2 - No\n";
     cin >> programCompletion;
@@ -384,3 +428,4 @@ int getCategoryChoice () { //prompts the user to pick one of the 8 categories wi
     cout << "  8 - Henrys (Inductors)" << endl;
     return getMenuChoice(1, 8);
 }
+
